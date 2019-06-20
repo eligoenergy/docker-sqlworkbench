@@ -1,11 +1,9 @@
-FROM openjdk:8-alpine
+FROM adoptopenjdk:8-jre-hotspot
 LABEL maintainer "Chris Wells <chris@cevanwells.com>"
 
-RUN apk add --update \
-		curl \
-		ca-certificates \
-		unzip \
-	&& rm -rf /var/cache/apk/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends unzip \
+&& rm -rf /var/lib/apt/lists/*
 
 ENV SQLWB_VERSION=Build124
 ENV SQLWB_SRC_URL=https://www.sql-workbench.eu/Workbench-$SQLWB_VERSION.zip
@@ -44,12 +42,13 @@ COPY sql/* $SQLWB_SHARE_DIR/sql/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
 	&& chmod +x /usr/local/bin/docker-cmd.sh
 
-RUN addgroup -S appworker \
-	&& adduser -D \
-			   -S \
-			   -H \
-			   -h $SQLWB_APP_DIR \
-			   -G appworker \
+RUN addgroup --system appworker \
+	&& adduser --system \
+               --disabled-password \
+			   --no-create-home \
+               --gecos "" \
+			   --home "$SQLWB_APP_DIR" \
+			   --ingroup appworker \
 			   appworker \
 	&& chown appworker:appworker -R $SQLWB_APP_DIR
 
