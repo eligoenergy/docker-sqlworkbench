@@ -21,7 +21,7 @@ RUN curl -sSL $SQLWB_SRC_URL -o sqlworkbench-$SQLWB_VERSION.zip \
 	&& rm -f sqlworkbench-$SQLWB_VERSION.zip
 
 # Install PostgreSQL JDBC driver
-RUN curl -sSL http://central.maven.org/maven2/org/postgresql/postgresql/9.2-1003-jdbc4/postgresql-9.2-1003-jdbc4.jar \
+RUN curl -sSL http://central.maven.org/maven2/org/postgresql/postgresql/9.4.1212/postgresql-9.4.1212.jar \
 		 -o jdbc-postgresql.jar \
 	&& mv jdbc-postgresql.jar /usr/local/lib/
 
