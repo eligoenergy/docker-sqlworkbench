@@ -3,6 +3,17 @@ set -e
 
 SQLWB_ARGS=-configDir=$SQLWB_APP_DIR/config
 PROFILE=$1
-SCRIPT=$SQLWB_APP_DIR/sql/$2.sql
+shift
+if [ -n "$PROFILE" ]; then
+    SQLWB_ARGS="$SQLWB_ARGS -profile=$PROFILE"
+fi
 
-/usr/local/bin/sqlwbconsole.sh $SQLWB_ARGS -profile=$PROFILE -script=$SCRIPT 2>&1
+SCRIPT=$SQLWB_APP_DIR/sql/$1.sql
+if [ -f "$SCRIPT" ]; then
+    SQLWB_ARGS="$SQLWB_ARGS -script=$SCRIPT"
+elif [ -n "$2" ]; then
+    SQLWB_ARGS="$SQLWB_ARGS -command=\"$*\""
+fi
+
+cd $SQLWB_APP_DIR/exports
+eval "/usr/local/bin/sqlwbconsole.sh $SQLWB_ARGS 2>&1"
