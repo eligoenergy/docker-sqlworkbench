@@ -3,9 +3,11 @@ LABEL maintainer "Chris Wells <chris@cevanwells.com>"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends unzip \
+                                                  fontconfig \
+                                                  ttf-dejavu \
 && rm -rf /var/lib/apt/lists/*
 
-ENV SQLWB_VERSION=Build124
+ENV SQLWB_VERSION=Build124-with-optional-libs
 ENV SQLWB_SRC_URL=https://www.sql-workbench.eu/Workbench-$SQLWB_VERSION.zip
 ENV SQLWB_SHARE_DIR=/usr/local/share/sqlworkbench
 ENV SQLWB_APP_DIR=/app
