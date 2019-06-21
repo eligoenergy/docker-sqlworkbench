@@ -4,7 +4,9 @@ set -e
 SQLWB_ARGS=-configDir=$SQLWB_APP_DIR/config
 PROFILE=$1
 shift
-if [ -n "$PROFILE" ]; then
+if [ "${PROFILE#-connection=}" != "${PROFILE}" ]; then
+    SQLWB_ARGS="$SQLWB_ARGS $PROFILE"
+elif [ -n "$PROFILE" ]; then
     SQLWB_ARGS="$SQLWB_ARGS -profile=$PROFILE"
 fi
 
