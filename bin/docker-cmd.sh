@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-SQLWB_ARGS=-configDir=$SQLWB_APP_DIR/config
+SQLWB_ARGS="-configDir=$SQLWB_APP_DIR/config -profileStorage=$SQLWB_APP_DIR/config"
 PROFILE=$1
 shift
 if [ "${PROFILE#-connection=}" != "${PROFILE}" ]; then
