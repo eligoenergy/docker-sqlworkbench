@@ -18,4 +18,5 @@ elif [ -n "$2" ]; then
 fi
 
 cd $SQLWB_APP_DIR/exports
-eval "/usr/local/bin/sqlwbconsole.sh $SQLWB_ARGS 2>&1"
+# SQL Workbench/J consults the SHELL environment variable when using WbSysExec.
+eval "SHELL=/bin/bash /usr/local/bin/sqlwbconsole.sh $SQLWB_ARGS 2>&1"
