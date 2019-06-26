@@ -1,0 +1,6 @@
+profile.pg_env.name=pg_env
+profile.pg_env.driverclass=org.postgresql.Driver
+profile.pg_env.url=jdbc:postgresql://$PGHOST:$PGPORT/$PGDATABASE?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+profile.pg_env.username=$PGUSER
+profile.pg_env.password=$PGPASSWORD
+profile.pg_env.fetchsize=1000

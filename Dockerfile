@@ -5,6 +5,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends unzip \
                                                   fontconfig \
                                                   ttf-dejavu \
+                                                  gettext-base \
 && rm -rf /var/lib/apt/lists/*
 
 ENV SQLWB_VERSION=Build124-with-optional-libs
