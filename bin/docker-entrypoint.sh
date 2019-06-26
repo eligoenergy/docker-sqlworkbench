@@ -11,10 +11,9 @@ sync_dir()
 {
 	for f in `ls $1`
 	do
-		if ! cmp -s $1/$f $2/$f; then
-      echo "Replacing missing or damaged file: ${2}/${f}"
-      cp $1/$f $2/$f
-		fi
+	    [ -f $2/$f ] && continue;
+        [ -z "$DEBUG" ] || echo "Replacing missing file ${2}/${f}"
+        cp -f $1/$f $2/$f
 	done
 }
 
