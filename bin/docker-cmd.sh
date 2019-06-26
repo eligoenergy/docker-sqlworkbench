@@ -6,21 +6,23 @@ SQLWB_ARGS="-configDir=$SQLWB_CONFIG -profileStorage=$SQLWB_CONFIG"
 
 for TEMPLATE in $SQLWB_CONFIG/*.properties.in; do
     [ -f "$TEMPLATE" ] || continue
-    OUTPUT=$SQLWB_CONFIG/$(basename -s.in $TEMPLATE)
-    DEFAULTS=$SQLWB_CONFIG/$(basename -s.properties.in $TEMPLATE).default.env
-    if [ -f "$DEFAULTS" ]; then
-        DEFAULT_ENV=`env - sh -ac ". $DEFAULTS; env"`
-        while IFS= read -r DEFAULT; do
-            NAME=`echo $DEFAULT | sed -E 's|^(.+)=(.*)$|\1|g'`
-            eval CURRENT_VALUE="\$$NAME"
-            [ -z "$CURRENT_VALUE" ] || continue
-            DEFAULT_VALUE=`echo $DEFAULT | sed -e "s|$NAME=||"`
-            eval $NAME=$DEFAULT_VALUE; export $NAME
-        done <<EOF
+    echo '' | {
+        OUTPUT=$SQLWB_CONFIG/$(basename -s.in $TEMPLATE)
+        DEFAULTS=$SQLWB_CONFIG/$(basename -s.properties.in $TEMPLATE).default.env
+        if [ -f "$DEFAULTS" ]; then
+            DEFAULT_ENV=`env - sh -ac ". $DEFAULTS; env"`
+            while IFS= read -r DEFAULT; do
+                NAME=`echo $DEFAULT | sed -E 's|^(.+)=(.*)$|\1|g'`
+                eval CURRENT_VALUE="\$$NAME"
+                [ -z "$CURRENT_VALUE" ] || continue
+                DEFAULT_VALUE=`echo $DEFAULT | sed -e "s|$NAME=||"`
+                eval $NAME=$DEFAULT_VALUE; export $NAME
+            done <<EOF
 $DEFAULT_ENV
 EOF
-    fi
-    envsubst < "$TEMPLATE" > "$OUTPUT"
+        fi
+        envsubst < "$TEMPLATE" > "$OUTPUT"
+    }
 done
 
 PROFILE=$1
