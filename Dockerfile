@@ -6,46 +6,36 @@ RUN apt-get update \
                                                   fontconfig \
                                                   ttf-dejavu \
                                                   gettext-base \
-&& rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-ENV SQLWB_VERSION=Build124-with-optional-libs
-ENV SQLWB_SRC_URL=https://www.sql-workbench.eu/Workbench-$SQLWB_VERSION.zip
-ENV SQLWB_SHARE_DIR=/usr/local/share/sqlworkbench
-ENV SQLWB_APP_DIR=/app
-
-WORKDIR $SQLWB_APP_DIR
-RUN mkdir exports config sql \
-    && mkdir -p $SQLWB_SHARE_DIR/config \
-                $SQLWB_SHARE_DIR/sql
-
-RUN curl -sSL $SQLWB_SRC_URL -o sqlworkbench-$SQLWB_VERSION.zip \
-	&& unzip -q sqlworkbench-$SQLWB_VERSION.zip -d /usr/local/bin \
-	&& chmod +x /usr/local/bin/sqlwbconsole.sh \
-	&& rm -f sqlworkbench-$SQLWB_VERSION.zip
-
+ENV SQLWB_LIB_DIR=/usr/local/lib
+WORKDIR $SQLWB_LIB_DIR
 # Install PostgreSQL JDBC driver
 RUN curl -sSL http://central.maven.org/maven2/org/postgresql/postgresql/9.4.1212/postgresql-9.4.1212.jar \
-		 -o jdbc-postgresql.jar \
-	&& mv jdbc-postgresql.jar /usr/local/lib/
+		 -o jdbc-postgresql.jar
 
 # Install MariaDB (mysql) JDBC driver
 RUN curl -sSL http://central.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/2.3.0/mariadb-java-client-2.3.0.jar \
-		 -o jdbc-mariadb.jar \
-	&& mv jdbc-mariadb.jar /usr/local/lib/
+		 -o jdbc-mariadb.jar
 
 # Install MSSQL JDBC driver
 RUN curl -sSL https://github.com/Microsoft/mssql-jdbc/releases/download/v7.1.3/mssql-jdbc-7.1.3.jre8-preview.jar \
-		 -o jdbc-mssql.jar \
-	&& mv jdbc-mssql.jar /usr/local/lib/
+		 -o jdbc-mssql.jar
 
-COPY bin/* /usr/local/bin/
-COPY config/* $SQLWB_SHARE_DIR/config/
-COPY sql/* $SQLWB_SHARE_DIR/sql/
+ENV SQLWB_BIN_DIR=/usr/local/bin \
+    SQLWB_SHARE_DIR=/usr/local/share/sqlworkbench \
+    SQLWB_VERSION=Build124-with-optional-libs
+WORKDIR $SQLWB_SHARE_DIR
+RUN curl -sSL https://www.sql-workbench.eu/Workbench-$SQLWB_VERSION.zip -o sqlworkbench-$SQLWB_VERSION.zip \
+	&& unzip -q sqlworkbench-$SQLWB_VERSION.zip \
+	&& chmod +x sqlwbconsole.sh \
+    && ln -s `readlink -f sqlwbconsole.sh` $SQLWB_BIN_DIR/ \
+	&& rm -f sqlworkbench-$SQLWB_VERSION.zip
 
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
-	&& chmod +x /usr/local/bin/docker-cmd.sh
-
-RUN addgroup --system appworker \
+ENV SQLWB_APP_DIR=/app
+WORKDIR $SQLWB_APP_DIR
+RUN mkdir -p exports config sql \
+    && addgroup --system appworker \
 	&& adduser --system \
                --disabled-password \
 			   --no-create-home \
@@ -54,6 +44,14 @@ RUN addgroup --system appworker \
 			   --ingroup appworker \
 			   appworker \
 	&& chown appworker:appworker -R $SQLWB_APP_DIR
+
+WORKDIR $SQLWB_SHARE_DIR
+COPY config/* ./config/
+COPY sql/* ./sql/
+
+WORKDIR /usr/local/bin
+COPY bin/* ./
+RUN chmod +x docker-entrypoint.sh docker-cmd.sh
 
 USER appworker
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
