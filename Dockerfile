@@ -49,6 +49,9 @@ WORKDIR $SQLWB_SHARE_DIR
 COPY config/* ./config/
 COPY sql/* ./sql/
 
+ONBUILD COPY --chown=appworker config/* $SQLWB_APP_DIR/config/
+ONBUILD COPY --chown=appworker sql/* $SQLWB_APP_DIR/sql/
+
 WORKDIR /usr/local/bin
 COPY bin/* ./
 RUN chmod +x docker-entrypoint.sh docker-cmd.sh
