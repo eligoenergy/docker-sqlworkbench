@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-SQLWB_ARGS="-configDir=$SQLWB_CONFIG_DIR -profileStorage=$SQLWB_CONFIG_DIR"
+SQLWB_ARGS="-logfile=$SQLWB_LOG_DIR/workbench.log -configDir=$SQLWB_CONFIG_DIR -profileStorage=$SQLWB_CONFIG_DIR"
 
 for TEMPLATE in $SQLWB_CONFIG_DIR/*.properties.in; do
     [ -f "$TEMPLATE" ] || continue

@@ -35,9 +35,10 @@ RUN curl -sSL https://www.sql-workbench.eu/Workbench-$SQLWB_VERSION.zip -o sqlwo
 ENV SQLWB_APP_DIR=/app \
     SQLWB_CONFIG_DIR=/app/config \
     SQLWB_EXPORT_DIR=/app/exports \
+    SQLWB_LOG_DIR=/app/log \
     SQLWB_SCRIPT_DIR=/app/sql
 WORKDIR $SQLWB_APP_DIR
-RUN mkdir -p exports config sql \
+RUN mkdir -p config exports log sql \
     && addgroup --system appworker \
 	&& adduser --system \
                --disabled-password \
