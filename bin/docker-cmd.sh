@@ -1,14 +1,13 @@
 #!/bin/sh
 set -e
 
-SQLWB_CONFIG="$SQLWB_APP_DIR/config"
-SQLWB_ARGS="-configDir=$SQLWB_CONFIG -profileStorage=$SQLWB_CONFIG"
+SQLWB_ARGS="-configDir=$SQLWB_CONFIG_DIR -profileStorage=$SQLWB_CONFIG_DIR"
 
-for TEMPLATE in $SQLWB_CONFIG/*.properties.in; do
+for TEMPLATE in $SQLWB_CONFIG_DIR/*.properties.in; do
     [ -f "$TEMPLATE" ] || continue
     echo '' | {
-        OUTPUT=$SQLWB_CONFIG/$(basename -s.in $TEMPLATE)
-        DEFAULTS=$SQLWB_CONFIG/$(basename -s.properties.in $TEMPLATE).default.env
+        OUTPUT=$SQLWB_CONFIG_DIR/$(basename -s.in $TEMPLATE)
+        DEFAULTS=$SQLWB_CONFIG_DIR/$(basename -s.properties.in $TEMPLATE).default.env
         if [ -f "$DEFAULTS" ]; then
             DEFAULT_ENV=`env - sh -ac ". $DEFAULTS; env"`
             while IFS= read -r DEFAULT; do
@@ -33,8 +32,7 @@ elif [ -n "$PROFILE" ]; then
     SQLWB_ARGS="$SQLWB_ARGS -profile=$PROFILE"
 fi
 
-SQLWB_SCRIPT_DIR="$SQLWB_APP_DIR/sql"
-SCRIPT=$SQLWB_SCRIPT_DIR/$1.sql
+SCRIPT="$SQLWB_SCRIPT_DIR/$1.sql"
 if [ -f "$SCRIPT" ]; then
     RUN_SCRIPT="$SQLWB_SCRIPT_DIR/run_script.sql"
     if [ -f "$RUN_SCRIPT" ]; then
@@ -65,7 +63,7 @@ elif [ -n "$2" ]; then
     SQLWB_ARGS="$SQLWB_ARGS -command=\"$*\""
 fi
 
-cd $SQLWB_APP_DIR/exports
+cd $SQLWB_EXPORT_DIR
 # SQL Workbench/J consults the SHELL environment variable when using WbSysExec.
 SQLWB_CMD="SHELL=/bin/bash /usr/local/bin/sqlwbconsole.sh $SQLWB_ARGS 2>&1"
 [ -z "$DEBUG" ] || echo $SQLWB_CMD
