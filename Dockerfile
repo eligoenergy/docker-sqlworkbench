@@ -53,6 +53,13 @@ WORKDIR $SQLWB_SHARE_DIR
 COPY config/* ./config/
 COPY sql/* ./sql/
 
+ONBUILD ARG SQLWB_INSTALL_EXTRA_PACKAGES
+ONBUILD USER root
+ONBUILD RUN test -n "$SQLWB_INSTALL_EXTRA_PACKAGES" \
+            && apt-get update \
+            && apt-get install -y --no-install-recommends $SQLWB_INSTALL_EXTRA_PACKAGES \
+            && rm -rf /var/lib/apt/lists/*
+ONBUILD USER appworker
 ONBUILD COPY --chown=appworker config/* $SQLWB_APP_DIR/config/
 ONBUILD COPY --chown=appworker sql/* $SQLWB_APP_DIR/sql/
 
