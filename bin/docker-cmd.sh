@@ -25,7 +25,7 @@ EOF
 done
 
 PROFILE=$1
-shift
+if [ "$#" -gt 0 ]; then shift; fi
 if [ "${PROFILE#-connection=}" != "${PROFILE}" ]; then
     SQLWB_ARGS="$SQLWB_ARGS $PROFILE"
 elif [ -n "$PROFILE" ]; then
